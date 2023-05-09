@@ -14,17 +14,11 @@ namespace document_viewer_app.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Index(string nombreArchivo)
+        public IActionResult Index([FromQuery] string nombreArchivo = "")
         {
             if (string.IsNullOrEmpty(nombreArchivo))
             {
-                return RedirectToAction("Index");
+                return View();
             }
 
             string extension = Path.GetExtension(nombreArchivo);
@@ -39,13 +33,13 @@ namespace document_viewer_app.Controllers
             }
             else
             {
-                return RedirectToAction("Index");
+                return View();
             }
         }
 
         public IActionResult Reporting(string nombreArchivo = "") //dotnet_core_tutorial.pdf
         {
-            string urlCompleta = $"https://bconnectstoragetest.blob.core.windows.net/temp/{nombreArchivo}";
+            string urlCompleta = $"{nombreArchivo}";
             var report = new TestReport(urlCompleta);
 
             return View(report); // Pasar el objeto TestReport creado como modelo de la vista
@@ -53,7 +47,7 @@ namespace document_viewer_app.Controllers
 
         public async Task<IActionResult> RichEdit(string nombreArchivo = "") //Documento.docx
         {
-            string fileUrl = $"https://bconnectstoragetest.blob.core.windows.net/temp/{nombreArchivo}";
+            string fileUrl = $"{nombreArchivo}";
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(fileUrl);
