@@ -1,3 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Index";
 }
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Post))
+{
+    <div class="form-group">
+        <label for="nombreArchivo">Nombre del archivo:</label>
+        <input type="text" name="nombreArchivo" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Ver archivo</button>
+}

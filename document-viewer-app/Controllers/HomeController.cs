@@ -19,6 +19,30 @@ namespace document_viewer_app.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult Index(string nombreArchivo)
+        {
+            if (string.IsNullOrEmpty(nombreArchivo))
+            {
+                return RedirectToAction("Index");
+            }
+
+            string extension = Path.GetExtension(nombreArchivo);
+
+            if (extension == ".docx")
+            {
+                return RedirectToAction("RichEdit", new { nombreArchivo = nombreArchivo });
+            }
+            else if (extension == ".pdf")
+            {
+                return RedirectToAction("Reporting", new { nombreArchivo = nombreArchivo });
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
         public IActionResult Reporting(string nombreArchivo = "") //dotnet_core_tutorial.pdf
         {
             string urlCompleta = $"https://bconnectstoragetest.blob.core.windows.net/temp/{nombreArchivo}";
