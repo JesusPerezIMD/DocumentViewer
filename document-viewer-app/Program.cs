@@ -1,5 +1,7 @@
 using DevExpress.AspNetCore;
 using DevExpress.AspNetCore.Reporting;
+using DevExpress.XtraCharts;
+using document_viewer_app.Services;
 using Microsoft.Extensions.FileProviders;
 //...
 
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<DocumentViewerApiService>();
 builder.Services.AddDevExpressControls();
 builder.Services.AddMvc();
 builder.Services.ConfigureReportingServices(configurator => {
