@@ -2,7 +2,6 @@
 using document_viewer_app.Reports;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Text;
 
 namespace document_viewer_app.Controllers
 {
@@ -26,34 +25,21 @@ namespace document_viewer_app.Controllers
 
             if (extension == ".docx")
             {
-                string encryptedValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(nombreArchivo));
-                return RedirectToAction("RichEdit", new { nombreArchivo = encryptedValue });
+                return RedirectToAction("RichEdit", new { nombreArchivo = nombreArchivo });
             }
             else if (extension == ".pdf")
             {
-                string encryptedValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(nombreArchivo));
-                return RedirectToAction("Reporting", new { nombreArchivo = encryptedValue });
+                return RedirectToAction("Reporting", new { nombreArchivo = nombreArchivo });
             }
             else
             {
-				return RedirectToAction("ErrorSite");
-			}
+                return View();
+            }
         }
 
-		public IActionResult ErrorSite()
-		{
-			return View();
-		}
-
-		public IActionResult Reporting(string nombreArchivo = "") //dotnet_core_tutorial.pdf
+        public IActionResult Reporting(string nombreArchivo = "") //dotnet_core_tutorial.pdf
         {
-            if (string.IsNullOrEmpty(nombreArchivo))
-            {
-                return Content("Error: no se especificó ningún archivo.");
-            }
-
-            string decryptedValue = Encoding.UTF8.GetString(Convert.FromBase64String(nombreArchivo));
-            string urlCompleta = decryptedValue;
+            string urlCompleta = $"{nombreArchivo}";
             var report = new TestReport(urlCompleta);
 
             return View(report); // Pasar el objeto TestReport creado como modelo de la vista
@@ -61,14 +47,7 @@ namespace document_viewer_app.Controllers
 
         public async Task<IActionResult> RichEdit(string nombreArchivo = "") //Documento.docx
         {
-            if (string.IsNullOrEmpty(nombreArchivo))
-            {
-                return Content("Error: no se especificó ningún archivo.");
-            }
-
-            string decryptedValue = Encoding.UTF8.GetString(Convert.FromBase64String(nombreArchivo));
-            string fileUrl = decryptedValue;
-
+            string fileUrl = $"{nombreArchivo}";
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(fileUrl);
