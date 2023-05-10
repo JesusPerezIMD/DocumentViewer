@@ -47,5 +47,8 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "RichEdit",
     pattern: "{controller=Home}/{action=RichEdit}/{id?}");
+app.MapControllerRoute(
+	name: "Error",
+	pattern: "{controller=Home}/{action=Error}/{id?}");
 
 app.Run();

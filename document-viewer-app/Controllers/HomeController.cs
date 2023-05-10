@@ -36,11 +36,16 @@ namespace document_viewer_app.Controllers
             }
             else
             {
-                return View();
-            }
+				return RedirectToAction("ErrorSite");
+			}
         }
 
-        public IActionResult Reporting(string nombreArchivo = "") //dotnet_core_tutorial.pdf
+		public IActionResult ErrorSite()
+		{
+			return View();
+		}
+
+		public IActionResult Reporting(string nombreArchivo = "") //dotnet_core_tutorial.pdf
         {
             if (string.IsNullOrEmpty(nombreArchivo))
             {
