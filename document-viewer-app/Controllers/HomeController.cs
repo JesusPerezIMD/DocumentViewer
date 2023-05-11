@@ -3,6 +3,7 @@ using document_viewer_app.Reports;
 using document_viewer_app.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Text;
 using static document_viewer_app.Services.DocumentViewer;
 
 namespace document_viewer_app.Controllers
@@ -35,11 +36,13 @@ namespace document_viewer_app.Controllers
 
                     if (extension == ".docx")
                     {
-                        return RedirectToAction("RichEdit", new { nombreArchivo = response.fileUrl });
+                        string encryptedValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(response.fileUrl));
+                        return RedirectToAction("RichEdit", new { nombreArchivo = encryptedValue });
                     }
                     else if (extension == ".pdf")
                     {
-                        return RedirectToAction("Reporting", new { nombreArchivo = response.fileUrl });
+                        string encryptedValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(response.fileUrl));
+                        return RedirectToAction("Reporting", new { nombreArchivo = encryptedValue });
                     }
                     else
                     {
@@ -59,7 +62,13 @@ namespace document_viewer_app.Controllers
 
         public IActionResult Reporting(string nombreArchivo = "") //dotnet_core_tutorial.pdf
         {
-            string urlCompleta = $"{nombreArchivo}";
+            if (string.IsNullOrEmpty(nombreArchivo))
+            {
+                return Content("Error: no se especificó ningún archivo.");
+            }
+
+            string decryptedValue = Encoding.UTF8.GetString(Convert.FromBase64String(nombreArchivo));
+            string urlCompleta = decryptedValue;
             var report = new TestReport(urlCompleta);
 
             return View(report); // Pasar el objeto TestReport creado como modelo de la vista
@@ -67,7 +76,14 @@ namespace document_viewer_app.Controllers
 
         public async Task<IActionResult> RichEdit(string nombreArchivo = "") //Documento.docx
         {
-            string fileUrl = $"{nombreArchivo}";
+            if (string.IsNullOrEmpty(nombreArchivo))
+            {
+                return Content("Error: no se especificó ningún archivo.");
+            }
+
+            string decryptedValue = Encoding.UTF8.GetString(Convert.FromBase64String(nombreArchivo));
+            string fileUrl = decryptedValue;
+
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(fileUrl);
