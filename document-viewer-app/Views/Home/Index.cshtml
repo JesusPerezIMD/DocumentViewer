@@ -1,3 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Index";
 }
+
+<form method="post" action="@Url.Action("VerDocumento")">
+    <h1>Secret Key:</h1>
+    <br>
+    <input class="form-control" type="text" name="secretKey" />
+    <br>
+    <button class="btn btn-primary" type="submit">Ver Documento</button>
+</form>

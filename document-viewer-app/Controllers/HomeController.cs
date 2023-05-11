@@ -1,39 +1,59 @@
 ﻿using document_viewer_app.Models;
 using document_viewer_app.Reports;
+using document_viewer_app.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using static document_viewer_app.Services.DocumentViewer;
 
 namespace document_viewer_app.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly DocumentViewerApiService _documentViewerApiService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(DocumentViewerApiService documentViewerApiService, ILogger<HomeController> logger)
         {
+            _documentViewerApiService = documentViewerApiService;
             _logger = logger;
         }
 
-        public IActionResult Index([FromQuery] string nombreArchivo = "")
+        public IActionResult Index()
         {
-            if (string.IsNullOrEmpty(nombreArchivo))
-            {
-                return View();
-            }
+            return View();
+        }
 
-            string extension = Path.GetExtension(nombreArchivo);
+        [HttpPost]
+        public async Task<IActionResult> VerDocumento(string secretKey = "")
+        {
+            try
+            {
+                var response = await _documentViewerApiService.Auth(new AuthRequest { secretKey = secretKey });
+                if (response.status == "OK")
+                {
+                    string extension = Path.GetExtension(response.fileUrl);
 
-            if (extension == ".docx")
-            {
-                return RedirectToAction("RichEdit", new { nombreArchivo = nombreArchivo });
+                    if (extension == ".docx")
+                    {
+                        return RedirectToAction("RichEdit", new { nombreArchivo = response.fileUrl });
+                    }
+                    else if (extension == ".pdf")
+                    {
+                        return RedirectToAction("Reporting", new { nombreArchivo = response.fileUrl });
+                    }
+                    else
+                    {
+                        return View();
+                    }
+                }
+                else
+                {
+                    return Content($"Error al obtener el documento: {response.message}");
+                }
             }
-            else if (extension == ".pdf")
+            catch (Exception ex)
             {
-                return RedirectToAction("Reporting", new { nombreArchivo = nombreArchivo });
-            }
-            else
-            {
-                return View();
+                return Content($"Error al obtener el documento: {ex.Message}");
             }
         }
 
