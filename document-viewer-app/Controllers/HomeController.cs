@@ -19,12 +19,13 @@ namespace document_viewer_app.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(string k)
+        public IActionResult Index()
         {
-            if (!string.IsNullOrEmpty(k))
+            string secretKey = HttpContext.Request.Query["k"];
+
+            if (!string.IsNullOrEmpty(secretKey))
             {
-                var result = await VerDocumento(k);
-                return result;
+                return VerDocumento(secretKey).GetAwaiter().GetResult();
             }
 
             return View();
